@@ -1,0 +1,41 @@
+module top_module(
+    input [31:0] a,
+    input [31:0] b,
+    output [31:0] sum
+);
+
+    wire carry;
+    wire [15:0] sum0;
+    wire [15:0] sum1;
+
+    // Lower 16 bits
+    add16 add_lower(
+        .a(a[15:0]),
+        .b(b[15:0]),
+        .cin(1'b0),
+        .sum(sum[15:0]),
+        .cout(carry)
+    );
+
+    // Upper 16 bits, assuming carry = 0
+    add16 add_upper0(
+        .a(a[31:16]),
+        .b(b[31:16]),
+        .cin(1'b0),
+        .sum(sum0),
+        .cout()
+    );
+
+    // Upper 16 bits, assuming carry = 1
+    add16 add_upper1(
+        .a(a[31:16]),
+        .b(b[31:16]),
+        .cin(1'b1),
+        .sum(sum1),
+        .cout()
+    );
+
+    // Select correct upper-half result
+    assign sum[31:16] = carry ? sum1 : sum0;
+
+endmodule
